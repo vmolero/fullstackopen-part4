@@ -55,3 +55,50 @@ describe("total likes", () => {
     expect(result).toBe(0);
   });
 });
+
+describe("4.5*: helper functions and unit tests, step3 (favoriteBlog)", () => {
+  test("when there is no favorite at all", () => {
+    const result = listHelper.favoriteBlog([
+      {
+        _id: "2",
+        title: "Title 2",
+        author: "Edsger W. Dijkstra",
+        url: "http://title2.fi",
+        likes: 0,
+        __v: 0
+      }
+    ]);
+
+    expect(result).toEqual({});
+  });
+
+  test("when there is only 1 favorite", () => {
+    const result = listHelper.favoriteBlog([
+      {
+        _id: "1",
+        title: "Title 1",
+        author: "Edsger W. Dijkstra",
+        url: "http://title1.fi",
+        likes: 5,
+        __v: 0
+      },
+      {
+        _id: "2",
+        title: "Title 2",
+        author: "Edsger W. Dijkstra",
+        url: "http://title2.fi",
+        likes: 7,
+        __v: 0
+      }
+    ]);
+
+    expect(result).toEqual({
+      _id: "2",
+      title: "Title 2",
+      author: "Edsger W. Dijkstra",
+      url: "http://title2.fi",
+      likes: 7,
+      __v: 0
+    });
+  });
+});
