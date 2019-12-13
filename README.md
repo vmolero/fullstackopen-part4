@@ -75,10 +75,10 @@ app.use(middleware.errorHandler);
 module.exports = app;
 ```
 
-6. Install dev dependency for server watching:
+6. Install dev dependency for server watching and automated testing:
 
 ```
-$ npm i -D nodemon
+$ npm i -D nodemon jest eslint
 ```
 
 7. Add npm run scripts to `package.json` file
@@ -129,4 +129,33 @@ app.use(
     ":method :url :status :res[content-length] - :response-time ms :morganBody"
   )
 );
+```
+
+## 9. Prepare package.json scripts to something like this:
+
+```json
+scripts: {
+  "build:ui": "rm -rf build && cd ../../frontend/ && npm run build --prod && cp -r build ../../backend/",
+  "deploy": "git push heroku master",
+  "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
+  "logs:prod": "heroku logs --tail",
+  "lint": "eslint .",
+  "test": "jest --verbose"
+}
+```
+
+`.eslintrc.json`
+
+```json
+  "env": {
+    "commonjs": true
+    "es6": true,
+    "node": true,
+    "jest": true,
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    // ...
+  },
+};
 ```
