@@ -2,15 +2,15 @@ fullstackopen-part4
 
 # Backend project
 
-1.  Set up the project
+## 1. Set up the project
 
     `$ npm init`
 
-2.  Create index.js entry point and install min dependencies:
+## 2. Install minimum dependencies:
 
     `$ npm i express body-parser cors mongoose dotenv`
 
-3.  Create `.env` file with PORT and DB_CONNECTION_STRING
+## 3. Create `.env` file
 
 `.env`
 
@@ -24,7 +24,7 @@ DB_CONNECTION_STRING=mydb://user:pass@localhost:1234
 `index.js`
 
 ```javascript
-const app = require("./app"); // the actual Express app
+const app = require("./src/app"); // the actual Express app
 const http = require("http");
 const config = require("./utils/config");
 
@@ -35,7 +35,7 @@ server.listen(config.PORT, () => {
 });
 ```
 
-5.  Use minimum scaffold app.js file in `src` folder:
+5.  Actual Express app.js file in `src` folder:
 
 `src/app.js` (could be also <_app_name_>.js)
 
@@ -103,4 +103,30 @@ in order to watch during development
 
 ```bash
 $ npm run watch
+```
+
+## 8. for middleware: requestLogger u can use morgan
+
+```
+$ npm i morgan
+```
+
+```javascript
+const morgan = require("morgan");
+
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+morgan.token("morganBody", function(req) {
+  if ("body" in req && !isEmptyObject(req.body)) {
+    return JSON.stringify(req.body);
+  }
+  return " ";
+});
+
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :morganBody"
+  )
+);
 ```
