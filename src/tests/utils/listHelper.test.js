@@ -9,27 +9,25 @@ test("dummy returns one", () => {
 });
 
 describe("total likes", () => {
-  const listWithOneBlog = [
-    {
-      _id: "1",
-      title: "Title 1",
-      author: "Edsger W. Dijkstra",
-      url: "http://title1.fi",
-      likes: 5,
-      __v: 0
-    },
-    {
-      _id: "2",
-      title: "Title 2",
-      author: "Edsger W. Dijkstra",
-      url: "http://title2.fi",
-      likes: 4,
-      __v: 0
-    }
-  ];
-
   test("when list has only one blog equals the likes of that", () => {
-    const result = listHelper.totalLikes(listWithOneBlog);
+    const result = listHelper.totalLikes([
+      {
+        _id: "1",
+        title: "Title 1",
+        author: "Edsger W. Dijkstra",
+        url: "http://title1.fi",
+        likes: 5,
+        __v: 0
+      },
+      {
+        _id: "2",
+        title: "Title 2",
+        author: "Edsger W. Dijkstra",
+        url: "http://title2.fi",
+        likes: 4,
+        __v: 0
+      }
+    ]);
 
     expect(result).toBe(9);
   });
@@ -99,6 +97,51 @@ describe("4.5*: helper functions and unit tests, step3 (favoriteBlog)", () => {
       url: "http://title2.fi",
       likes: 7,
       __v: 0
+    });
+  });
+});
+
+describe("4.6*: helper functions and unit tests, step4 (mostBlogs)", () => {
+  test("when there is none", () => {
+    const result = listHelper.mostBlogs([]);
+
+    expect(result).toEqual({
+      name: "Nobody",
+      blogs: 0
+    });
+  });
+
+  test("when there are two authors and three blogs", () => {
+    const result = listHelper.mostBlogs([
+      {
+        _id: "1",
+        title: "Title 1",
+        author: "Edsger W. Dijkstra",
+        url: "http://title1.fi",
+        likes: 5,
+        __v: 0
+      },
+      {
+        _id: "2",
+        title: "Title 2",
+        author: "Edsger W. Dijkstra",
+        url: "http://title2.fi",
+        likes: 4,
+        __v: 0
+      },
+      {
+        _id: "3",
+        title: "Title 3",
+        author: "Barbara Liskov",
+        url: "http://title3.fi",
+        likes: 4,
+        __v: 0
+      }
+    ]);
+
+    expect(result).toEqual({
+      name: "Edsger W. Dijkstra",
+      blogs: 2
     });
   });
 });
