@@ -44,9 +44,15 @@ describe("Blog routes IntegrationTests", () => {
     const result = await api.get("/api/blogs");
 
     result.body.forEach(blog => {
-      const entry = _.omit(blog, ["_id", "__v"]);
+      const entry = _.omit(blog, ["id"]);
 
       expect(testHelper.initialBlogEntries).toContainEqual(entry);
     });
+  });
+
+  test("4.9*: Blog list tests, step2 (there is an id attribute)", async () => {
+    const result = await api.get("/api/blogs");
+
+    expect(result.body[0].id).toBeDefined();
   });
 });
