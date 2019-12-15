@@ -91,5 +91,45 @@ describe("Blog routes IntegrationTests", () => {
 
       expect(blog.likes).toBe(0);
     });
+
+    describe("4.12*: Blog list tests, step5", () => {
+      test("when title is missing it should return 400", async () => {
+        const newEntry = {
+          author: "Daniel Molero",
+          url: "http://daniel-molero.com/blog/",
+          likes: 1
+        };
+
+        await api
+          .post("/api/blogs")
+          .send(newEntry)
+          .expect(400);
+      });
+
+      test("when url is missing it should return 400", async () => {
+        const newEntry = {
+          title: "I love lego train",
+          author: "Daniel Molero",
+          likes: 1
+        };
+
+        await api
+          .post("/api/blogs")
+          .send(newEntry)
+          .expect(400);
+      });
+
+      test("when both title and url are missing it should return 400", async () => {
+        const newEntry = {
+          author: "Daniel Molero",
+          likes: 1
+        };
+
+        await api
+          .post("/api/blogs")
+          .send(newEntry)
+          .expect(400);
+      });
+    });
   });
 });
