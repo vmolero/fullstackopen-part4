@@ -132,4 +132,16 @@ describe("Blog routes IntegrationTests", () => {
       });
     });
   });
+
+  describe("DELETE /api/blogs/:id", () => {
+    test("4.13 Blog list expansions, step1", async () => {
+      const blogList = await Blog.find({});
+      const firstEntry = blogList.shift().toJSON();
+
+      await api.delete(`/api/blogs/${firstEntry.id}`).expect(204);
+      const deletedBlog = await Blog.findById(firstEntry.id);
+
+      expect(Boolean(deletedBlog)).toBe(false);
+    });
+  });
 });
