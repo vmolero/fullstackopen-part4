@@ -58,8 +58,8 @@ describe("Blog routes IntegrationTests", () => {
     });
   });
 
-  describe("GET /api/blogs", () => {
-    test("4.10: Blog list tests, step3 (POST /api/blogs)", async () => {
+  describe("POST /api/blogs", () => {
+    test("4.10: Blog list tests, step3", async () => {
       const newEntry = {
         title: "I love lego train",
         author: "Daniel Molero",
