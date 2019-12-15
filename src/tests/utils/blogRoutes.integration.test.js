@@ -55,4 +55,24 @@ describe("Blog routes IntegrationTests", () => {
 
     expect(result.body[0].id).toBeDefined();
   });
+
+  test("4.10: Blog list tests, step3 (POST /api/blogs)", async () => {
+    const newEntry = {
+      title: "I love lego train",
+      author: "Daniel Molero",
+      url: "http://daniel-molero.com/blog/",
+      likes: 7
+    };
+    const blogsInitialLength = (await Blog.find({})).length;
+
+    const result = await api.post("/api/blogs").send(newEntry);
+
+    expect(result.body.id).toBeDefined();
+    const blog = (await Blog.findById(result.body.id)).toJSON();
+
+    expect(_.omit(blog, "id")).toEqual(newEntry);
+    const blogsFinalLength = (await Blog.find({})).length;
+
+    expect(blogsFinalLength).toBe(blogsInitialLength + 1);
+  });
 });
