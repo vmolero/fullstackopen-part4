@@ -59,7 +59,7 @@ describe("Blog routes IntegrationTests", () => {
   });
 
   describe("POST /api/blogs", () => {
-    test("4.10: Blog list tests, step3", async () => {
+    test("4.10: Blog list tests, step3: a new blog entry is created", async () => {
       const newEntry = {
         title: "I love lego train",
         author: "Daniel Molero",
@@ -77,6 +77,19 @@ describe("Blog routes IntegrationTests", () => {
       const blogsFinalLength = (await Blog.find({})).length;
 
       expect(blogsFinalLength).toBe(blogsInitialLength + 1);
+    });
+
+    test("4.11*: Blog list tests, step4: likes defaults to 0 if missing", async () => {
+      const newEntry = {
+        title: "I love lego train",
+        author: "Daniel Molero",
+        url: "http://daniel-molero.com/blog/"
+      };
+
+      const result = await api.post("/api/blogs").send(newEntry);
+      const blog = (await Blog.findById(result.body.id)).toJSON();
+
+      expect(blog.likes).toBe(0);
     });
   });
 });
