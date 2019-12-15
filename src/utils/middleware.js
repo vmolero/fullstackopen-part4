@@ -10,9 +10,14 @@ morgan.token("morganBody", function(req) {
   return " ";
 });
 
-const requestLogger = morgan(
-  ":method :url :status :res[content-length] - :response-time ms :morganBody"
-);
+const requestLogger = (error, request, response, next) => {
+  if (process.env.NODE_ENV === "test") {
+    return next(error, request, response);
+  }
+  return morgan(
+    ":method :url :status :res[content-length] - :response-time ms :morganBody"
+  );
+};
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
