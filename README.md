@@ -8,7 +8,9 @@ fullstackopen-part4
 
 ## 2. Install minimum dependencies:
 
-    `$ npm i express body-parser cors mongoose dotenv`
+`$ npm i express body-parser cors mongoose dotenv node-config`
+
+`node-config` resembles the config implementation
 
 ## 3. Create `.env` file
 
@@ -78,7 +80,7 @@ module.exports = app;
 6. Install dev dependency for server watching and automated testing:
 
 ```
-$ npm i -D nodemon jest eslint
+$ npm i -D nodemon jest eslint supertest cross-env
 ```
 
 7. Add npm run scripts to `package.json` file
