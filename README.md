@@ -1,6 +1,12 @@
 fullstackopen-part4
 
-# Backend project
+# Run tests
+
+- Docker and docker-compose have to be installed
+- Run `npm i`
+- Then `npm run test`
+
+# Backend project (My notes)
 
 ## 1. Set up the project
 
