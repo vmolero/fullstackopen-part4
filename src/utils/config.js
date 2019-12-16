@@ -4,7 +4,8 @@ let PORT = process.env.PORT;
 let MONGODB_URI = process.env.MONGODB_URI;
 
 if (process.env.NODE_ENV === "test") {
-  MONGODB_URI = process.env.MONGODB_TEST;
+  MONGODB_URI =
+    process.env.MONGODB_TEST || "mongodb://root:root@localhost:27017/test";
 }
 
 module.exports = {
