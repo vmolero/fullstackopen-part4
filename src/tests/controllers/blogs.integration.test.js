@@ -144,4 +144,21 @@ describe("Blog routes IntegrationTests", () => {
       expect(Boolean(deletedBlog)).toBe(false);
     });
   });
+
+  describe("PUT /api/blogs/:id", () => {
+    test("4.14 Blog list expansions, step2", async () => {
+      const blogList = await Blog.find({});
+      const firstEntry = blogList.shift().toJSON();
+
+      firstEntry.author = "Alba Molero";
+
+      await api
+        .put(`/api/blogs/${firstEntry.id}`)
+        .send(firstEntry)
+        .expect(200);
+      const updatedBlogEntry = await Blog.findById(firstEntry.id);
+
+      expect(updatedBlogEntry.author).toBe("Alba Molero");
+    });
+  });
 });
