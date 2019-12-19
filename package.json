@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "watch": "cross-env NODE_ENV=development nodemon index.js",
-    "test": "docker-compose up -d && cross-env NODE_ENV=test jest --verbose --runInBand; docker-compose down -v --remove-orphans",
+    "test": "docker-compose up -d && cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles; docker-compose down -v --remove-orphans",
     "test:unit": "cross-env NODE_ENV=test jest -t UnitTests --verbose",
     "eslint": "eslint .",
     "eslint:fix": "eslint . --fix"
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/vmolero/fullstackopen-part4#readme",
   "dependencies": {
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
