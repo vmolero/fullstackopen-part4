@@ -1,4 +1,4 @@
-const _ = require("lodash");
+const _ = require('lodash');
 
 const dummy = blogs => 1;
 
@@ -24,14 +24,14 @@ const favoriteBlog = blogs => {
 };
 
 const mostBlogs = blogs => {
-  let name = "Nobody";
+  let name = 'Nobody';
   let writtenBlogs = 0;
 
   if (blogs.length === 0) {
     return { name, blogs: writtenBlogs };
   }
 
-  const groupedByAuthor = _.groupBy(blogs, "author");
+  const groupedByAuthor = _.groupBy(blogs, 'author');
 
   return _.reduce(
     groupedByAuthor,
@@ -49,19 +49,19 @@ const mostBlogs = blogs => {
 };
 
 const mostLikes = blogs => {
-  let author = "Nobody";
+  let author = 'Nobody';
   let likes = 0;
 
   if (blogs.length === 0) {
     return { author, likes };
   }
 
-  const groupedByAuthor = _.groupBy(blogs, "author");
+  const groupedByAuthor = _.groupBy(blogs, 'author');
 
   return _.reduce(
     groupedByAuthor,
     (carry, blogList, blogAuthor) => {
-      const blogLikes = _.sumBy(blogList, "likes");
+      const blogLikes = _.sumBy(blogList, 'likes');
 
       if (blogLikes > carry.likes) {
         return {

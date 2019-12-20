@@ -1,12 +1,12 @@
 /* eslint-disable */
 db.createUser({
-  user: "root",
-  pwd: "root",
+  user: 'root',
+  pwd: 'root',
   roles: [
     {
-      role: "readWrite",
-      db: "test"
+      role: 'readWrite',
+      db: 'test'
     }
   ]
 });
-db.createCollection("test");
+db.createCollection('test');

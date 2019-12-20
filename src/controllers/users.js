@@ -1,17 +1,17 @@
-const bcrypt = require("bcrypt");
-const usersRouter = require("express").Router();
-const User = require("../models/User");
+const bcrypt = require('bcrypt');
+const usersRouter = require('express').Router();
+const User = require('../models/User');
 
 function validatePassword(body) {
-  if (!("password" in body)) {
-    throw new Error("ValidationError: password is required");
+  if (!('password' in body)) {
+    throw new Error('ValidationError: password is required');
   }
   if (body.password.length < 3) {
-    throw new Error("ValidationError: password too short (min 3 chars.)");
+    throw new Error('ValidationError: password too short (min 3 chars.)');
   }
 }
 
-usersRouter.post("/", async (request, response, next) => {
+usersRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body;
 
@@ -34,7 +34,7 @@ usersRouter.post("/", async (request, response, next) => {
   }
 });
 
-usersRouter.get("/", async (request, response) => {
+usersRouter.get('/', async (request, response) => {
   const users = await User.find({});
 
   response.json(users);

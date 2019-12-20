@@ -225,7 +225,7 @@
     "prefer-spread": "error",
     "prefer-template": "error",
     "quote-props": "off",
-    "quotes": ["error", "double"],
+    "quotes": ["error", "single"],
     "radix": "error",
     "require-await": "error",
     "require-jsdoc": "off",

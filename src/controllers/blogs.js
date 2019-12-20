@@ -1,13 +1,13 @@
-const blogsRouter = require("express").Router();
-const Blog = require("../models/Blog");
+const blogsRouter = require('express').Router();
+const Blog = require('../models/Blog');
 
-blogsRouter.get("/", async (request, response) => {
+blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({});
 
   response.json(blogs);
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post('/', async (request, response) => {
   try {
     const blog = new Blog(request.body);
     const savedBlog = await blog.save();
@@ -18,7 +18,7 @@ blogsRouter.post("/", async (request, response) => {
   }
 });
 
-blogsRouter.put("/:id", async (request, response, next) => {
+blogsRouter.put('/:id', async (request, response, next) => {
   const body = request.body;
 
   try {
@@ -33,7 +33,7 @@ blogsRouter.put("/:id", async (request, response, next) => {
   }
 });
 
-blogsRouter.delete("/:id", async (request, response) => {
+blogsRouter.delete('/:id', async (request, response) => {
   try {
     await Blog.findByIdAndRemove(request.params.id);
 
