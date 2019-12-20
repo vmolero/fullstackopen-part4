@@ -27,7 +27,8 @@ describe("Users IntegrationTests", () => {
     await User.deleteMany({});
     mongoose.connection.close();
   });
-  describe("when there is initially one user at db", () => {
+
+  describe("POST /api/users", () => {
     test("creation succeeds with a fresh username", async () => {
       const usersAtStart = await testHelper.usersInDb();
 
@@ -50,6 +51,34 @@ describe("Users IntegrationTests", () => {
       const userNames = usersAtEnd.map(u => u.username);
 
       expect(userNames).toContain(newUser.username);
+    });
+
+    test("creation fails if username is too short", async () => {
+      await api
+        .post("/api/users")
+        .send({ username: "ab", password: "1234" })
+        .expect(400);
+    });
+
+    test("creation fails if password not set", async () => {
+      await api
+        .post("/api/users")
+        .send({ username: "abcd" })
+        .expect(400);
+    });
+
+    test("creation fails if password is too short", async () => {
+      await api
+        .post("/api/users")
+        .send({ username: "abcd", password: "12" })
+        .expect(400);
+    });
+
+    test("creation fails if username is duplicated", async () => {
+      await api
+        .post("/api/users")
+        .send({ username: "root", password: "1245" })
+        .expect(400);
     });
   });
 
