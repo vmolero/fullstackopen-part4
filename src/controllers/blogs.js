@@ -17,7 +17,7 @@ const isValidToken = request => {
   const token = getTokenFrom(request);
   const decodedToken = jwt.verify(token, config.SECRET);
 
-  return !token || !decodedToken.id;
+  return token && decodedToken.id ? decodedToken : false;
 };
 
 blogsRouter.get('/', async (request, response) => {
@@ -26,9 +26,9 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs);
 });
 
-const saveBlog = async request => {
+const saveBlogFor = async (userId, request) => {
   const blog = new Blog(request.body);
-  const user = await User.findOne({});
+  const user = await User.findById(userId);
 
   blog.user = user._id;
   const savedBlog = await blog.save();
@@ -41,10 +41,12 @@ const saveBlog = async request => {
 
 blogsRouter.post('/', async (request, response, next) => {
   try {
-    if (isValidToken(request)) {
+    const identifiedUser = isValidToken(request);
+
+    if (!identifiedUser) {
       return response.status(401).json({ error: 'token missing or invalid' });
     }
-    const savedBlog = await saveBlog(request);
+    const savedBlog = await saveBlogFor(identifiedUser.id, request);
 
     return response.status(201).json(savedBlog);
   } catch (err) {
