@@ -3,13 +3,23 @@ const supertest = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../app');
 const Blog = require('../../models/Blog');
+const User = require('../../models/User');
 const testHelper = require('../testHelper');
 const api = supertest(app);
 
 describe('Blog routes IntegrationTests', () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({});
+  let token = null;
 
+  beforeAll(async () => {
+    await Blog.deleteMany({});
+    await User.deleteMany({});
+  });
+
+  beforeEach(async () => {
+    const testUser = { username: 'test', password: 'test' };
+
+    await User.save(testUser);
+    token = await User.getToken({ username: 'test', password: 'test' });
     await Promise.all(
       testHelper.initialBlogEntries.map(entry => {
         const blogObject = new Blog(entry);
@@ -19,9 +29,14 @@ describe('Blog routes IntegrationTests', () => {
     );
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await Blog.deleteMany({});
+    await User.deleteMany({});
+  });
+
+  afterAll(() => {
     mongoose.connection.close();
+    token = null;
   });
 
   describe('GET /api/blogs', () => {
@@ -59,6 +74,34 @@ describe('Blog routes IntegrationTests', () => {
   });
 
   describe('POST /api/blogs', () => {
+    test('should not allow to post blog if no token', async () => {
+      const newEntry = {
+        title: 'I love lego train',
+        author: 'Daniel Molero',
+        url: 'http://daniel-molero.com/blog/',
+        likes: 7
+      };
+
+      await api
+        .post('/api/blogs')
+        .send(newEntry)
+        .expect(401);
+    });
+
+    test('should not allow to post blog if wrong token', async () => {
+      const newEntry = {
+        title: 'I love lego train',
+        author: 'Daniel Molero',
+        url: 'http://daniel-molero.com/blog/',
+        likes: 7
+      };
+
+      await api
+        .post('/api/blogs')
+        .set('Authorization', 'Bearer wrongToken')
+        .send(newEntry)
+        .expect(401);
+    });
     test('4.10: Blog list tests, step3: a new blog entry is created', async () => {
       const newEntry = {
         title: 'I love lego train',
@@ -68,12 +111,17 @@ describe('Blog routes IntegrationTests', () => {
       };
       const blogsInitialLength = (await Blog.find({})).length;
 
-      const result = await api.post('/api/blogs').send(newEntry);
+      const result = await api
+        .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newEntry)
+        .expect(201)
+        .expect('Content-Type', /application\/json/u);
 
       expect(result.body.id).toBeDefined();
       const blog = (await Blog.findById(result.body.id)).toJSON();
 
-      expect(_.omit(blog, 'id')).toEqual(newEntry);
+      expect(_.omit(blog, ['id', 'user'])).toEqual(newEntry);
       const blogsFinalLength = (await Blog.find({})).length;
 
       expect(blogsFinalLength).toBe(blogsInitialLength + 1);
@@ -86,7 +134,10 @@ describe('Blog routes IntegrationTests', () => {
         url: 'http://daniel-molero.com/blog/'
       };
 
-      const result = await api.post('/api/blogs').send(newEntry);
+      const result = await api
+        .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newEntry);
       const blog = (await Blog.findById(result.body.id)).toJSON();
 
       expect(blog.likes).toBe(0);
@@ -102,6 +153,7 @@ describe('Blog routes IntegrationTests', () => {
 
         await api
           .post('/api/blogs')
+          .set('Authorization', `Bearer ${token}`)
           .send(newEntry)
           .expect(400);
       });
@@ -115,6 +167,7 @@ describe('Blog routes IntegrationTests', () => {
 
         await api
           .post('/api/blogs')
+          .set('Authorization', `Bearer ${token}`)
           .send(newEntry)
           .expect(400);
       });
@@ -127,6 +180,7 @@ describe('Blog routes IntegrationTests', () => {
 
         await api
           .post('/api/blogs')
+          .set('Authorization', `Bearer ${token}`)
           .send(newEntry)
           .expect(400);
       });

@@ -7,19 +7,15 @@ const api = supertest(app);
 
 describe('Users IntegrationTests', () => {
   beforeEach(async () => {
-    const user = new User({
+    await User.deleteMany({});
+
+    await User.save({
       username: 'root',
       password: 'sekret'
     });
 
-    await User.deleteMany({});
-    await user.save();
     await Promise.all(
-      testHelper.initialUsers.map(initialUser => {
-        const userObject = new User(initialUser);
-
-        return userObject.save();
-      })
+      testHelper.initialUsers.map(initialUser => User.save(initialUser))
     );
   });
 
