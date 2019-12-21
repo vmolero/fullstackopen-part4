@@ -1,31 +1,8 @@
-const morgan = require('morgan');
-
-function isEmptyObject(obj) {
-  return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
-morgan.token('morganBody', function(req) {
-  if ('body' in req && !isEmptyObject(req.body)) {
-    return JSON.stringify(req.body);
-  }
-  return ' ';
-});
-
-const requestLogger = (error, request, response, next) => {
-  if (process.env.NODE_ENV === 'test') {
-    return next(error, request, response);
-  }
-  return morgan(
-    ':method :url :status :res[content-length] - :response-time ms :morganBody'
-  );
-};
-
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' });
 };
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message);
-
   if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return response.status(400).send({ error: 'malformatted id' });
   }
@@ -38,11 +15,21 @@ const errorHandler = (error, request, response, next) => {
     return response.status(401).json({ error: 'access forbidden' });
   }
 
+  console.error(error.message);
   next(error);
 };
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization');
+
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    request.token = authorization.substring(7);
+  }
+  next();
+};
+
 module.exports = {
-  requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 };
