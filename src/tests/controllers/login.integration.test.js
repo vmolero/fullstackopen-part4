@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const supertest = require('supertest');
 const mongoose = require('mongoose');
 const app = require('../../app');
@@ -6,16 +5,22 @@ const User = require('../../models/User');
 const api = supertest(app);
 
 describe('Login IntegrationTests', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await User.deleteMany({});
-    await User.save({ username: 'test', password: 'test' });
   });
 
-  afterAll(async () => {
+  beforeEach(async () => {
+    await User.insert({ username: 'test', password: 'test' });
+  });
+
+  afterEach(async () => {
     await User.deleteMany({});
+  });
+
+  afterAll(() => {
     mongoose.connection.close();
   });
-  test('successful login', async () => {
+  test('successful login', async done => {
     const token = await User.getToken({ username: 'test', password: 'test' });
 
     const response = await api
@@ -25,6 +30,7 @@ describe('Login IntegrationTests', () => {
       .expect('Content-Type', /application\/json/u);
 
     expect(response.body.token).toBe(token);
+    done();
   });
 
   test('failed login', async () => {

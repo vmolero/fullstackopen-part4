@@ -188,14 +188,62 @@ describe('Blog routes IntegrationTests', () => {
   });
 
   describe('DELETE /api/blogs/:id', () => {
-    test('4.13 Blog list expansions, step1', async () => {
-      const blogList = await Blog.find({});
-      const firstEntry = blogList.shift().toJSON();
+    test('4.13 Blog list expansions, step1 (added token auth)', async () => {
+      const newEntry = new Blog({
+        title: 'I love lego train',
+        author: 'Daniel Molero',
+        url: 'http://daniel-molero.com/blog/'
+      });
 
-      await api.delete(`/api/blogs/${firstEntry.id}`).expect(204);
-      const deletedBlog = await Blog.findById(firstEntry.id);
+      const newUser = await User.insert({
+        username: 'victor',
+        password: '1234'
+      });
+      const userToken = await User.getToken({
+        username: 'victor',
+        password: '1234'
+      });
+
+      newEntry.user = newUser._id;
+      const savedBlog = await newEntry.save();
+
+      await api
+        .delete(`/api/blogs/${savedBlog.id}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(204);
+      const deletedBlog = await Blog.findById(savedBlog.id);
 
       expect(Boolean(deletedBlog)).toBe(false);
+    });
+
+    test('disallow deleting if user is not who posted', async done => {
+      const newEntry = new Blog({
+        title: 'I love lego train',
+        author: 'Daniel Molero',
+        url: 'http://daniel-molero.com/blog/'
+      });
+      const victor = await User.insert({
+        username: 'victor',
+        password: '1234'
+      });
+
+      await User.insert({ username: 'david', password: '1111' });
+      const davidToken = await User.getToken({
+        username: 'david',
+        password: '1111'
+      });
+
+      newEntry.user = victor._id;
+      const savedBlog = await newEntry.save();
+
+      await api
+        .delete(`/api/blogs/${savedBlog.id}`)
+        .set('Authorization', `Bearer ${davidToken}`)
+        .expect(401);
+      const stillExistingBlog = await Blog.findById(savedBlog.id);
+
+      expect(Boolean(stillExistingBlog)).toBe(true);
+      done();
     });
   });
 
@@ -208,6 +256,7 @@ describe('Blog routes IntegrationTests', () => {
 
       await api
         .put(`/api/blogs/${firstEntry.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(firstEntry)
         .expect(200);
       const updatedBlogEntry = await Blog.findById(firstEntry.id);

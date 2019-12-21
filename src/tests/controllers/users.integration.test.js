@@ -6,26 +6,33 @@ const app = require('../../app');
 const api = supertest(app);
 
 describe('Users IntegrationTests', () => {
+  afterAll(async () => {
+    await User.deleteMany({});
+  });
+
   beforeEach(async () => {
     await User.deleteMany({});
 
-    await User.save({
+    await User.insert({
       username: 'root',
       password: 'sekret'
     });
 
     await Promise.all(
-      testHelper.initialUsers.map(initialUser => User.save(initialUser))
+      testHelper.initialUsers.map(initialUser => User.insert(initialUser))
     );
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await User.deleteMany({});
+  });
+
+  afterAll(() => {
     mongoose.connection.close();
   });
 
   describe('POST /api/users', () => {
-    test('creation succeeds with a fresh username', async () => {
+    test('creation succeeds with a fresh username', async done => {
       const usersAtStart = await testHelper.usersInDb();
 
       const newUser = {
@@ -47,13 +54,15 @@ describe('Users IntegrationTests', () => {
       const userNames = usersAtEnd.map(u => u.username);
 
       expect(userNames).toContain(newUser.username);
+      done();
     });
 
-    test('creation fails if username is too short', async () => {
+    test('creation fails if username is too short', async done => {
       await api
         .post('/api/users')
         .send({ username: 'ab', password: '1234' })
         .expect(400);
+      done();
     });
 
     test('creation fails if password not set', async () => {
