@@ -4,7 +4,7 @@ const User = require('../models/User');
 usersRouter.post('/', async (request, response, next) => {
   try {
     const body = request.body;
-    const savedUser = await User.save(body);
+    const savedUser = await User.insert(body);
 
     return response.json(savedUser);
   } catch (exception) {

@@ -18,7 +18,7 @@ describe('Blog routes IntegrationTests', () => {
   beforeEach(async () => {
     const testUser = { username: 'test', password: 'test' };
 
-    await User.save(testUser);
+    await User.insert(testUser);
     token = await User.getToken({ username: 'test', password: 'test' });
     await Promise.all(
       testHelper.initialBlogEntries.map(entry => {
