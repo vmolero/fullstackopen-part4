@@ -4,20 +4,13 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const config = require('../utils/config');
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization');
-
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7);
-  }
-  return null;
-};
-
 const isValidToken = request => {
-  const token = getTokenFrom(request);
-  const decodedToken = jwt.verify(token, config.SECRET);
+  if (!('token' in request)) {
+    return false;
+  }
+  const decodedToken = jwt.verify(request.token, config.SECRET);
 
-  return token && decodedToken.id ? decodedToken : false;
+  return 'id' in decodedToken ? decodedToken : false;
 };
 
 blogsRouter.get('/', async (request, response) => {
