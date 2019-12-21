@@ -43,7 +43,7 @@ function validatePassword(body) {
   }
 }
 
-const save = async body => {
+const insert = async body => {
   validatePassword(body);
 
   const saltRounds = 10;
@@ -87,7 +87,7 @@ const getToken = async credentials => {
 };
 
 module.exports = {
-  save,
+  insert,
   findById,
   find,
   getToken,
