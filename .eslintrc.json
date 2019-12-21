@@ -101,7 +101,7 @@
     "max-statements": "error",
     "max-statements-per-line": "error",
     "multiline-comment-style": "error",
-    "multiline-ternary": "error",
+    "multiline-ternary": "off",
     "new-parens": "error",
     "newline-after-var": ["error", "always"],
     "newline-before-return": "off",
