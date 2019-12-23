@@ -55,8 +55,9 @@ blogsRouter.put('/:id', async (request, response, next) => {
       new: true,
       runValidators: true
     });
+    const blogToReturn = await Blog.findById(updatedBlog._id).populate('user');
 
-    response.json(updatedBlog.toJSON());
+    response.json(blogToReturn.toJSON());
   } catch (err) {
     return next(err);
   }
