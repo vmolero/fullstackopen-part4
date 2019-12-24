@@ -47,11 +47,15 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 });
 
+function hasUserAssigned(blog) {
+  return 'user' in blog && blog.user && 'id' in blog.user && blog.user.id;
+}
+
 blogsRouter.put('/:id', async (request, response, next) => {
   const body = request.body;
 
   try {
-    if ('user' in body) {
+    if (hasUserAssigned(body)) {
       const userId = body.user.id;
 
       delete body.user;
@@ -75,9 +79,14 @@ blogsRouter.delete('/:id', async (request, response) => {
     if (!identifiedUser) {
       return response.status(401).json({ error: 'token missing or invalid' });
     }
-    const blogToDelete = await Blog.findById(request.params.id);
+    const blogToDelete = await Blog.findById(request.params.id).populate(
+      'user'
+    );
 
-    if (blogToDelete.user.toString() === identifiedUser.id) {
+    if (
+      !hasUserAssigned(blogToDelete) ||
+      blogToDelete.user.id === identifiedUser.id
+    ) {
       await blogToDelete.remove();
       return response.status(204).end();
     }
