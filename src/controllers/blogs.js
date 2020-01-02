@@ -67,6 +67,9 @@ blogsRouter.post('/:id/comments', async (request, response, next) => {
         .status(400)
         .json({ error: 'blog id does not match with parameter' });
     }
+    if (request.body.comment.length === 0) {
+      return response.status(400).json({ error: 'empty comment' });
+    }
     const blog = await saveCommentForBlog(
       request.body.id,
       request.body.comment
