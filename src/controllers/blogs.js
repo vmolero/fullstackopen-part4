@@ -75,6 +75,14 @@ blogsRouter.put('/:id', async (request, response, next) => {
   }
 });
 
+async function updateUserBlogList(userId) {
+  const user = await User.findById(userId);
+  const blogs = await Blog.find({ user: userId });
+
+  user.blogs = blogs.map(blog => blog.id);
+  await user.save();
+}
+
 blogsRouter.delete('/:id', async (request, response) => {
   try {
     const identifiedUser = isValidToken(request);
@@ -86,14 +94,17 @@ blogsRouter.delete('/:id', async (request, response) => {
       'user'
     );
 
-    if (
-      !hasUserAssigned(blogToDelete) ||
-      blogToDelete.user.id === identifiedUser.id
-    ) {
+    if (!hasUserAssigned(blogToDelete)) {
       await blogToDelete.remove();
       return response.status(204).end();
     }
-    return response.status(401).end();
+    if (blogToDelete.user.id !== identifiedUser.id) {
+      return response.status(401).end();
+    }
+
+    await blogToDelete.remove();
+    await updateUserBlogList(identifiedUser.id);
+    return response.status(204).end();
   } catch (err) {
     return response.sendStatus(404);
   }
