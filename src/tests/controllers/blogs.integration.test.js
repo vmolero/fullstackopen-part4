@@ -60,7 +60,7 @@ describe('Blog routes IntegrationTests', () => {
       const result = await api.get('/api/blogs');
 
       result.body.forEach(blog => {
-        const entry = _.omit(blog, ['id']);
+        const entry = _.omit(blog, ['id', 'comments']);
 
         expect(testHelper.initialBlogEntries).toContainEqual(entry);
       });
@@ -121,7 +121,7 @@ describe('Blog routes IntegrationTests', () => {
       expect(result.body.id).toBeDefined();
       const blog = (await Blog.findById(result.body.id)).toJSON();
 
-      expect(_.omit(blog, ['id', 'user'])).toEqual(newEntry);
+      expect(_.omit(blog, ['id', 'user', 'comments'])).toEqual(newEntry);
       const blogsFinalLength = (await Blog.find({})).length;
 
       expect(blogsFinalLength).toBe(blogsInitialLength + 1);
@@ -183,6 +183,21 @@ describe('Blog routes IntegrationTests', () => {
           .set('Authorization', `Bearer ${token}`)
           .send(newEntry)
           .expect(400);
+      });
+    });
+
+    describe('7.11 POST comments', () => {
+      test('a comment is added to blog', async () => {
+        const aBlog = (await Blog.find({})).pop();
+
+        const result = await api
+          .post(`/api/blogs/${aBlog._id}/comments`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ id: aBlog._id, comment: 'This is a test comment' })
+          .expect(201)
+          .expect('Content-Type', /application\/json/u);
+
+        expect(result.body.comments).toContain('This is a test comment');
       });
     });
   });

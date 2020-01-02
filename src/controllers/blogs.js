@@ -48,6 +48,36 @@ blogsRouter.post('/', async (request, response, next) => {
   }
 });
 
+const saveCommentForBlog = async (blogId, comment) => {
+  const blog = await Blog.findById(blogId);
+
+  blog.comments.push(comment);
+  return blog.save();
+};
+
+blogsRouter.post('/:id/comments', async (request, response, next) => {
+  try {
+    const identifiedUser = isValidToken(request);
+
+    if (!identifiedUser) {
+      return response.status(401).json({ error: 'token missing or invalid' });
+    }
+    if (request.params.id !== request.body.id) {
+      return response
+        .status(400)
+        .json({ error: 'blog id does not match with parameter' });
+    }
+    const blog = await saveCommentForBlog(
+      request.body.id,
+      request.body.comment
+    );
+
+    return response.status(201).json(blog.populate('user'));
+  } catch (err) {
+    return next(err);
+  }
+});
+
 function hasUserAssigned(blog) {
   return 'user' in blog && blog.user && 'id' in blog.user && blog.user.id;
 }
