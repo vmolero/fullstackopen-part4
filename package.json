@@ -6,10 +6,11 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
     "watch": "cross-env NODE_ENV=development nodemon index.js",
-    "test": "docker-compose up -d && cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles; docker-compose down -v --remove-orphans",
+    "test": "sh start-mongo.sh test jest && cross-env NODE_ENV=test jest --verbose --runInBand --detectOpenHandles; sh stop-mongo.sh",
     "test:unit": "cross-env NODE_ENV=test jest -t UnitTests --verbose",
     "eslint": "eslint .",
-    "eslint:fix": "eslint . --fix"
+    "eslint:fix": "eslint . --fix",
+    "start:test": "sh start-mongo.sh test"
   },
   "repository": {
     "type": "git",
